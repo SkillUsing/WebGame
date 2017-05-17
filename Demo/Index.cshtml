@@ -1,0 +1,133 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Hello World</title>
+    <script src="~/Scripts/pixi.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <script type="text/javascript">
+        var type = "WebGL";
+        var state;
+        if (!PIXI.utils.isWebGLSupported()) {
+            type = "canvas";
+        }
+        PIXI.utils.sayHello(type);
+        var sprite;
+        var renderer = PIXI.autoDetectRenderer();
+        renderer.view.style.position = "absolute";
+        renderer.view.style.display = "block";
+        renderer.autoResize = true;
+        renderer.resize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.view);
+        var stage = new PIXI.Container();
+        renderer.render(stage);
+        PIXI.loader
+            .add("timg", "../Content/timg.jpg")
+            .load(setup);
+        function keyboard(keyCode) {
+            var key = {};
+            key.code = keyCode;
+            key.isDown = false;
+            key.isUp = true;
+            key.press = undefined;
+            key.release = undefined;
+            //The `downHandler`
+            key.downHandler = function(event) {
+                if (event.keyCode === key.code) {
+                    if (key.isUp && key.press) key.press();
+                    key.isDown = true;
+                    key.isUp = false;
+                }
+                event.preventDefault();
+            };
+
+            //The `upHandler`
+            key.upHandler = function(event) {
+                if (event.keyCode === key.code) {
+                    if (key.isDown && key.release) key.release();
+                    key.isDown = false;
+                    key.isUp = true;
+                }
+                event.preventDefault();
+            };
+
+            //Attach event listeners
+            window.addEventListener(
+                "keydown", key.downHandler.bind(key), false
+            );
+            window.addEventListener(
+                "keyup", key.upHandler.bind(key), false
+            );
+            return key;
+        }
+
+        function setup() {
+            sprite = new PIXI.Sprite(
+                PIXI.loader.resources["timg"].texture
+            );
+            sprite.y = 96;
+            sprite.vx = 0;
+            sprite.vy = 0;
+            sprite.width = 96;
+            sprite.height = 96;
+            stage.addChild(sprite);
+
+            //Capture the keyboard arrow keys
+            var left = keyboard(37),
+                up = keyboard(38),
+                right = keyboard(39),
+                down = keyboard(40);
+
+            //Left arrow key `press` method
+            left.press = function() {
+
+                //Change the sprite's velocity when the key is pressed
+                sprite.vx = -5;
+            };
+
+         
+
+            //Up
+            up.press = function() {
+                sprite.vy = -5;
+            };
+           
+
+            //Right
+            right.press = function() {
+                sprite.vx = 5;
+            };
+          
+
+            //Down
+            down.press = function() {
+                sprite.vy = 5;
+            };
+           
+
+            state = play;
+
+            renderer.render(stage);
+            gameLoop();
+        }
+        function gameLoop() {
+            requestAnimationFrame(gameLoop);
+            state();
+            renderer.render(stage);
+        }
+
+        function play() {
+            sprite.x += sprite.vx;
+            sprite.y += sprite.vy;
+        }
+
+    </script>
+</body>
+</html>
