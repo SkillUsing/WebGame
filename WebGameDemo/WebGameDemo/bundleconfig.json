@@ -1,0 +1,8 @@
+[
+  {
+    "outputFileName": "Scripts/pixi.min.js",
+    "inputFiles": [
+      "Scripts/pixi.js"
+    ]
+  }
+]

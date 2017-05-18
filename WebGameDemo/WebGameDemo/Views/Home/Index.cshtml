@@ -13,24 +13,31 @@
 </head>
 <body>
     <script type="text/javascript">
-        var type = "WebGL";
+        var protagonist;
         var state;
-        if (!PIXI.utils.isWebGLSupported()) {
-            type = "canvas";
-        }
-        PIXI.utils.sayHello(type);
         var sprite;
-        var renderer = PIXI.autoDetectRenderer();
-        renderer.view.style.position = "absolute";
-        renderer.view.style.display = "block";
-        renderer.autoResize = true;
-        renderer.resize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.view);
-        var stage = new PIXI.Container();
-        renderer.render(stage);
-        PIXI.loader
-            .add("timg", "../Content/timg.jpg")
-            .load(setup);
+
+
+        //环境
+        function Init() {
+            var renderer = PIXI.autoDetectRenderer();
+            renderer.view.style.position = "absolute";
+            renderer.view.style.display = "block";
+            renderer.autoResize = true;
+            renderer.resize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.view);
+            var stage = new PIXI.Container();
+            renderer.render(stage);
+        }
+
+        //Loading
+        function Loader() {
+            PIXI.loader
+                .add("timg", "../Content/timg.jpg")
+                .load(setup);
+        }
+
+        //键盘
         function keyboard(keyCode) {
             var key = {};
             key.code = keyCode;
@@ -38,8 +45,7 @@
             key.isUp = true;
             key.press = undefined;
             key.release = undefined;
-            //The `downHandler`
-            key.downHandler = function(event) {
+            key.downHandler = function (event) {
                 if (event.keyCode === key.code) {
                     if (key.isUp && key.press) key.press();
                     key.isDown = true;
@@ -47,9 +53,7 @@
                 }
                 event.preventDefault();
             };
-
-            //The `upHandler`
-            key.upHandler = function(event) {
+            key.upHandler = function (event) {
                 if (event.keyCode === key.code) {
                     if (key.isDown && key.release) key.release();
                     key.isDown = false;
@@ -57,17 +61,21 @@
                 }
                 event.preventDefault();
             };
-
-            //Attach event listeners
             window.addEventListener(
-                "keydown", key.downHandler.bind(key), false
+                "keydown",
+                key.downHandler.bind(key),
+                false
             );
             window.addEventListener(
-                "keyup", key.upHandler.bind(key), false
+                "keyup",
+                key.upHandler.bind(key),
+                false
             );
             return key;
         }
 
+
+        //初始化游戏
         function setup() {
             sprite = new PIXI.Sprite(
                 PIXI.loader.resources["timg"].texture
@@ -86,37 +94,56 @@
                 down = keyboard(40);
 
             //Left arrow key `press` method
-            left.press = function() {
-
-                //Change the sprite's velocity when the key is pressed
+            left.press = function () {
                 sprite.vx = -5;
+                if (right.isDown) {
+                    sprite.vx = 0;
+                }
+            };
+            left.release = function () {
+                sprite.vx = 0;
             };
 
-         
 
             //Up
-            up.press = function() {
+            up.press = function () {
                 sprite.vy = -5;
+                if (down.isDown) {
+                    sprite.vy = 0;
+                }
             };
-           
+            up.release = function () {
+                sprite.vy = 0;
+            };
 
             //Right
-            right.press = function() {
+            right.press = function () {
                 sprite.vx = 5;
+                if (left.isDown) {
+                    sprite.vx = 0;
+                }
             };
-          
+            right.release = function () {
+                sprite.vx = 0;
+            };
 
             //Down
-            down.press = function() {
+            down.press = function () {
                 sprite.vy = 5;
+                if (up.isDown) {
+                    sprite.vy = 0;
+                }
             };
-           
+            down.release = function () {
+                sprite.vy = 0;
+            };
 
             state = play;
 
             renderer.render(stage);
             gameLoop();
         }
+
         function gameLoop() {
             requestAnimationFrame(gameLoop);
             state();
@@ -127,7 +154,6 @@
             sprite.x += sprite.vx;
             sprite.y += sprite.vy;
         }
-
     </script>
 </body>
 </html>
