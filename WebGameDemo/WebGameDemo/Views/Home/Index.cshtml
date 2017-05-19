@@ -8,32 +8,33 @@
         * {
             margin: 0;
             padding: 0;
+            overflow-x: hidden;
+            overflow-y: hidden;
         }
     </style>
 </head>
 <body>
     <script type="text/javascript">
-        var protagonist;
-        var state;
-        var sprite;
-
+        var renderer, state, stage, sprite;
 
         //环境
         function Init() {
-            var renderer = PIXI.autoDetectRenderer();
-            renderer.view.style.position = "absolute";
-            renderer.view.style.display = "block";
-            renderer.autoResize = true;
+            renderer = PIXI.autoDetectRenderer(520, 520,{autoResize: true});
             renderer.resize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.view);
-            var stage = new PIXI.Container();
+            stage = new PIXI.Container();
             renderer.render(stage);
         }
 
+        window.addEventListener("resize", function (event) {
+            renderer.resize(window.innerWidth, window.innerHeight);
+        });
+        Init();
         //Loading
         function Loader() {
             PIXI.loader
                 .add("timg", "../Content/timg.jpg")
+                .add("background", "../Content/background.jpg")
                 .load(setup);
         }
 
@@ -74,10 +75,9 @@
             return key;
         }
 
-
         //初始化游戏
         function setup() {
-            sprite = new PIXI.Sprite(
+            sprite = PIXI.Sprite(
                 PIXI.loader.resources["timg"].texture
             );
             sprite.y = 96;
@@ -87,13 +87,11 @@
             sprite.height = 96;
             stage.addChild(sprite);
 
-            //Capture the keyboard arrow keys
             var left = keyboard(37),
                 up = keyboard(38),
                 right = keyboard(39),
                 down = keyboard(40);
 
-            //Left arrow key `press` method
             left.press = function () {
                 sprite.vx = -5;
                 if (right.isDown) {
@@ -104,8 +102,6 @@
                 sprite.vx = 0;
             };
 
-
-            //Up
             up.press = function () {
                 sprite.vy = -5;
                 if (down.isDown) {
@@ -116,7 +112,6 @@
                 sprite.vy = 0;
             };
 
-            //Right
             right.press = function () {
                 sprite.vx = 5;
                 if (left.isDown) {
@@ -127,7 +122,6 @@
                 sprite.vx = 0;
             };
 
-            //Down
             down.press = function () {
                 sprite.vy = 5;
                 if (up.isDown) {
@@ -154,6 +148,8 @@
             sprite.x += sprite.vx;
             sprite.y += sprite.vy;
         }
+
+
     </script>
 </body>
 </html>
