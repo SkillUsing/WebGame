@@ -211,10 +211,8 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\background.jpg" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\timg.jpg" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -225,7 +223,16 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="bundleconfig.json" />
+    <Content Include="Scripts\core.js.map" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scripts\core.js" />
+    <Content Include="Scripts\hexi.js" />
+    <Content Include="Scripts\hexi.min.js" />
+    <Content Include="images\blob.png" />
+    <Content Include="images\door.png" />
+    <Content Include="images\dungeon.png" />
+    <Content Include="images\explorer.png" />
+    <Content Include="images\treasure.png" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
@@ -233,7 +240,9 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\main.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\modules.js" />
     <Content Include="Scripts\pixi.js" />
     <Content Include="Scripts\pixi.min.js">
       <DependentUpon>pixi.js</DependentUpon>
