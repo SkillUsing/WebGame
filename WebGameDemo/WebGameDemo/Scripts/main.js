@@ -58,8 +58,9 @@ var sprite = new PIXI.Sprite(texture);
 //将图片文件转换成texture(纹理)
 //通过loader
 loader
-    .add("images/explorer.png")
-    .add("explorer", "images/explorer.png")
+    .add("images/explorer.png")//将图片文件加入纹理缓存中
+    .add("explorer", "images/explorer.png")//将图片文件加入纹理缓存中,并起一个别名
+    .add("images/treasureHunter.json")//加载图片集,优先使用此种方式加载纹理
     .load(setup)
     .on("progress", loadProgressHandler);//监控Loader 加载进度
 
@@ -68,19 +69,16 @@ function loadProgressHandler(loader, resource) {
     //resource.error 尝试加载文件时发生的任何可能的错误
     //resource.data 文件的原始二进制数据
 }
-
+//PIXi精灵,先加载的在下面
 
 
 function setup() {
     //显示精灵
     //如果您使用loader，则应通过引用loader资源对象中的纹理来创建精灵
-
-
-    var explorer = new Sprite(
+    var test1 = new Sprite(
         resources["images/explorer.png"].texture
     );
     var test = new Sprite(resources.explorer.texture);
-
     //定位精灵
     test.x = 64;
     test.y = 64;
@@ -93,7 +91,6 @@ function setup() {
     //test.scale.x = 2;
     //test.scale.y = 2;
 
-
     //旋转精灵
     test.rotation = 0.5;//直接旋转会以图片的左上角为锚点
     //让锚点居中
@@ -101,25 +98,85 @@ function setup() {
     test.anchor.y = 0.5;
 
     stage.addChild(test);
-    stage.addChild(explorer);//将sprite加入根容器对象中
+    stage.addChild(test1);//将sprite加入根容器对象中
 
 
-    renderer.render(stage);//将容器渲染出来
+    // renderer.render(stage);//将容器渲染出来
 
     //stage.removeChild(explorer);//删除
     //renderer.render(stage);//删除之后得重新渲染一次
     //explorer.visible = false;//不可见
     //renderer.render(stage);//还是得渲染一次
 
+    //加载纹理图集
+    var id = resources["images/treasureHunter.json"].textures;
+    let dungeon = new Sprite(id["dungeon.png"]);
+    dungeon.width = renderer.width;
+    dungeon.height = renderer.height;
+    stage.addChild(dungeon);
+    let explorer = new Sprite(id["explorer.png"]);
+    explorer.x = 100;
+    explorer.y = 100;
+
+    stage.addChild(explorer);
+    let treasure = new Sprite(id["treasure.png"]);
+    treasure.x = renderer.width - treasure.width - 66;
+    treasure.y = renderer.height / 2 - treasure.height / 2;
+    stage.addChild(treasure);
+
+    renderer.render(stage);
+
+
+
+
+    //根据父容器找到对应子元素的定位
+    //var pos = stage.toGlobal(explorer.position);
+    //根据全局定位找到对呀精灵的定位,而无需关心父容器是什么
+    var pos = explorer.getGlobalPosition();
+    console.log(pos);
+    //将全局定位转换成本地定位
+    var x = explorer.toLocal(explorer.position, treasure);
+    console.log(x);
+    //这个是人物相对于宝箱的位置距离就是本地定位
+    //而全局定位是相对于画布左上角0,0的定位
+
+
+
+
+    //Container -> RootSprites -> Container2 -> Sprites 
+    //直接将多个Sprites通过新的Container2打包成了一个组
+
+    //现在使用一个更有效率的粒子容器来分组精灵
+    //var superFastSprites = new ParticleContainer();
+    //superFastSprites.addChild(anySprite);
+    //ParticleContainer直接在GPU中工作
+    //该容器用于渲染量大并且无需高级功能的精灵
+    //因为它只有x, y, width, height, scale, pivot, alpha, visible属性
+
+    //显示文字
+    var message = new PIXI.Text(
+        "欢迎来到游戏世界!",
+        { fontFamily: "Arial", fontSize: 32, fill: "white" }
+    );
+    console.log(message.width);
+    message.position.set(renderer.width / 2 - message.width / 2, 10);
+    stage.addChild(message);
+    renderer.render(stage);
+
     window.setTimeout(() => {
         test.position.set(100, 100);
-        //renderer.render(stage);
-        console.log("yes");
-        //renderer.render(stage);
+        renderer.render(stage);
+        //这里可以看出,游戏其实就是重复渲染的过程
         return false;
     }, 3000);
 }
 
+
+function gameLoop() {
+    //每秒60次的渲染
+    requestAnimationFrame(gameLoop);
+    renderer.render(stage);
+}
 
 
 
